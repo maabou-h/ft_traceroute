@@ -22,6 +22,7 @@ void		tracer(void)
 	while (--nprobes)
 	{
 		pack();
+		g_data.tv_in = gettimestamp_ms();
 		if (sendto(g_data.sockfd, g_data.packet, DATALEN + ICMPHDRLEN\
 					+ IPHDRLEN, 0, g_data.info->ai_addr,\
 					g_data.info->ai_addrlen) < 0)
@@ -30,9 +31,9 @@ void		tracer(void)
 			close(g_data.sockfd);
 			exit(1);
 		}
+		while((responsesize = unpack()))
+			chkpkt(responsesize, nprobes);
 	}
-	while((responsesize = unpack()))
-		chkpkt(responsesize);
 	printf("\n");
 }
 

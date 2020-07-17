@@ -39,6 +39,14 @@ typedef struct			s_opt
 	int					nopt;
 }						t_opt;
 
+
+typedef struct			s_tval
+{
+	long				tv3;
+	long				tv2;
+	long				tv;
+}						t_tval;
+
 typedef struct			s_data
 {
 	int					sockfd;
@@ -52,6 +60,8 @@ typedef struct			s_data
 	char				ip[INET_ADDRSTRLEN];
 	char				addr[INET_ADDRSTRLEN];
 	t_opt				opt;
+	t_tval				tv_in;
+	t_tval				tv_out;
 	struct addrinfo		*info;
 }						t_data;
 
@@ -62,8 +72,8 @@ void					pack(void);
 int						unpack(void);
 void					initprog(void);
 int						options(int argc, char **av);
-int						chkpkt(int len);
-long					gettimestamp_ms(int flag);
+int						chkpkt(int len, int nprobe);
+t_tval				gettimestamp_ms(void);
 void					ft_bzero(void *s, size_t n);
 int						ft_atoi(const char *str);
 int						ft_strcmp(const char *s1, const char *s2);

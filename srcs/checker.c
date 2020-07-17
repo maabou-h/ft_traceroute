@@ -12,25 +12,33 @@
 
 #include "ft_ping.h"
 
-static void						badpacket(struct icmp *icmp)
-{
-	if (icmp->icmp_id != g_data.pid)
-		return ;
-	else
-	{
-		printf(" %s ",\
-				g_data.ip);
-	}
-}
 
-int								chkpkt(int len)
+int								chkpkt(int len, int nprobe)
 {
 	if (((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
 			== ICMP_ECHOREPLY || len == -1)
 	{
-			return (0);
+			exit (0);
 	}
 	else
-		badpacket((struct icmp*)(g_data.rcvpacket + 48));
+	{
+		if (((struct icmp*)(g_data.rcvpacket + 48))->icmp_id != g_data.pid)
+			return (0);
+		else
+		{
+			g_data.tv_out = gettimestamp_ms();
+			if (nprobe == 3)
+				printf(" %s ",\
+					g_data.ip);
+			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
+				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+					g_data.tv_out.tv3 - g_data.tv_in.tv3);
+			else if ((g_data.tv_out.tv2 - g_data.tv_in.tv2) > 0)
+				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+					g_data.tv_out.tv2 - g_data.tv_in.tv2);
+			else
+				printf(" %ld ms ", g_data.tv_out.tv - g_data.tv_in.tv);
+		}	
+	}
 	return (1);
 }

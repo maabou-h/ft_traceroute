@@ -23,8 +23,9 @@ int						unpack(void)
 
 	FD_ZERO(&fds);
 	FD_SET(g_data.rsockfd, &fds);
-	wait.tv_sec = 5;
+	wait.tv_sec = 1;
 	wait.tv_usec = 0;
+	ans = 0;
 	ft_bzero(&g_data.rcvpacket, sizeof(g_data.rcvpacket));
 	ft_bzero(&msg_h, sizeof(msg_h));
 	ft_bzero(&sin, sizeof(sin));
