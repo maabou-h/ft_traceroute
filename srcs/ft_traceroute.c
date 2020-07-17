@@ -12,6 +12,15 @@
 
 #include "ft_ping.h"
 
+void	endtracer(int sig)
+{
+	(void)sig;
+	printf("\n--- %s ft_traceroute statistics ---\n", g_data.dest);
+	close(g_data.sockfd);
+	close(g_data.rsockfd);
+	exit(1);
+}
+
 void		tracer(void)
 {
 	ssize_t	responsesize;
@@ -42,18 +51,19 @@ int			main(int argc, char **argv)
 	int		v;
 	int		i;
 
-	i = 64;
+	i = MAXHOPS;
+	signal(SIGINT, endtracer);
 	ft_bzero(&g_data, sizeof(g_data));
 	g_data.pid = getpid();
 	g_data.seq = 0;
-	g_data.ttl = 0;
+	g_data.ttl = 1;
 	if ((v = options(argc, argv + 1)) < 1)
 	{
 		printf("Usage: ft_traceroute [-h] [-i interval] [-t ttl] destination\n");
 		exit(0);
 	}
 	initprog();
-	printf("ft_traceroute to %s (%s), %d hops max, 60 bytes packets\n", g_data.dest, g_data.ip, i);
+	printf("ft_traceroute to %s (%s), %d hops max, 60 bytes packets\n", g_data.dest, g_data.ip, MAXHOPS);
 	while (--i)
 	{
 		tracer();

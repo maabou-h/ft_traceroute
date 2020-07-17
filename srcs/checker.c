@@ -16,9 +16,23 @@
 int								chkpkt(int len, int nprobe)
 {
 	if (((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
-			== ICMP_ECHOREPLY || len == -1)
+			!= ICMP_TIME_EXCEEDED || len == -1)
 	{
-			exit (0);
+			g_data.tv_out = gettimestamp_ms();
+			if (nprobe == 3)
+				printf("%2d %s ",g_data.ttl,\
+					g_data.ip);
+			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
+				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+					g_data.tv_out.tv3 - g_data.tv_in.tv3);
+			else if ((g_data.tv_out.tv2 - g_data.tv_in.tv2) > 0)
+				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+					g_data.tv_out.tv2 - g_data.tv_in.tv2);
+			else
+				printf(" %ld ms ", g_data.tv_out.tv - g_data.tv_in.tv);
+			if (nprobe == 1 && ((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
+				== ICMP_ECHOREPLY)
+				exit (0);
 	}
 	else
 	{
@@ -28,7 +42,7 @@ int								chkpkt(int len, int nprobe)
 		{
 			g_data.tv_out = gettimestamp_ms();
 			if (nprobe == 3)
-				printf(" %s ",\
+				printf("%2d %s ",g_data.ttl,\
 					g_data.ip);
 			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
 				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\

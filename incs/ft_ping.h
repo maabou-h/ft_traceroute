@@ -30,6 +30,7 @@
 # define IPHDRLEN		20
 # define STDTTL			255
 # define PKTLEN			84
+# define MAXHOPS		30
 
 typedef struct			s_opt
 {
