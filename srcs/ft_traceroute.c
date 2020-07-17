@@ -12,27 +12,28 @@
 
 #include "ft_ping.h"
 
-void		pinger()
-{
-	pack();
-	if (sendto(g_data.sockfd, g_data.packet, DATALEN + ICMPHDRLEN\
-				+ IPHDRLEN, 0, g_data.info->ai_addr,\
-				g_data.info->ai_addrlen) < 0)
-	{
-		printf("closing fd\n");
-		close(g_data.sockfd);
-		exit(1);
-	}
-}
-
 void		tracer(void)
 {
 	ssize_t	responsesize;
+	int		nprobes;
 	
 	responsesize = 0;
-		if ((responsesize = unpack()) == -1)
-			printf("response err\n");
+	nprobes = 4;
+	while (--nprobes)
+	{
+		pack();
+		if (sendto(g_data.sockfd, g_data.packet, DATALEN + ICMPHDRLEN\
+					+ IPHDRLEN, 0, g_data.info->ai_addr,\
+					g_data.info->ai_addrlen) < 0)
+		{
+			printf("closing fd\n");
+			close(g_data.sockfd);
+			exit(1);
+		}
+	}
+	while((responsesize = unpack()))
 		chkpkt(responsesize);
+	printf("\n");
 }
 
 int			main(int argc, char **argv)
@@ -43,6 +44,8 @@ int			main(int argc, char **argv)
 	i = 64;
 	ft_bzero(&g_data, sizeof(g_data));
 	g_data.pid = getpid();
+	g_data.seq = 0;
+	g_data.ttl = 0;
 	if ((v = options(argc, argv + 1)) < 1)
 	{
 		printf("Usage: ft_traceroute [-h] [-i interval] [-t ttl] destination\n");
@@ -52,8 +55,8 @@ int			main(int argc, char **argv)
 	printf("ft_traceroute to %s (%s), %d hops max, 60 bytes packets\n", g_data.dest, g_data.ip, i);
 	while (--i)
 	{
-		pinger();
 		tracer();
+		g_data.ttl++;
 	}
 	return (0);
 }

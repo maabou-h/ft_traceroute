@@ -29,8 +29,6 @@ void				initaddressdata(void)
 
 void				initsocket(void)
 {
-	struct timeval tv = {1,0};
-
 	if ((g_data.sockfd = socket(AF_INET,\
 					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
@@ -43,10 +41,16 @@ void				initsocket(void)
 		close(g_data.sockfd);
 		exit(1);
 	}
-	if (setsockopt(g_data.sockfd, SOL_SOCKET, SO_RCVTIMEO,\
-				&tv,  sizeof(tv)) < 0)
+	if ((g_data.rsockfd = socket(AF_INET,\
+					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
-		close(g_data.sockfd);
+		printf("ft_ping: error creating socket\n");
+		exit(1);
+	}
+	if (setsockopt(g_data.rsockfd, IPPROTO_IP, IP_HDRINCL,\
+				(int[1]){1}, sizeof(int)) < 0)
+	{
+		close(g_data.rsockfd);
 		exit(1);
 	}
 }

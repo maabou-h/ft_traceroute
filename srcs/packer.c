@@ -28,7 +28,7 @@ static void	geniphdr(struct ip *ip)
 	ip->ip_tos = 0;
 	ip->ip_len = IPHDRLEN + ICMPHDRLEN;
 	ip->ip_off = 0;
-	ip->ip_ttl = ++g_data.seq;
+	ip->ip_ttl = g_data.ttl;
 	ip->ip_p = IPPROTO_ICMP;
 	ip->ip_sum = 0;
 	ip->ip_id = (uint16_t)g_data.pid;
@@ -42,7 +42,7 @@ static void	genicmphdr(struct icmp *icmp)
 	icmp->icmp_code = 0;
 	icmp->icmp_id = (uint16_t)g_data.pid;
 	icmp->icmp_cksum = 0;
-	icmp->icmp_seq = g_data.seq;
+	icmp->icmp_seq = ++g_data.seq;
 	icmp->icmp_cksum = calculatechecksum(\
 			(unsigned short*)icmp, DATALEN + ICMPHDRLEN);
 }

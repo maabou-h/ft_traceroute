@@ -21,7 +21,6 @@ SRC := srcs/checker.c\
 		   srcs/init.c\
 		   srcs/options.c\
 		   srcs/packer.c\
-		   srcs/timestamp.c\
 		   srcs/unpacker.c
 
 

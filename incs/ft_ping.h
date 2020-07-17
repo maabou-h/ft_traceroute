@@ -42,7 +42,9 @@ typedef struct			s_opt
 typedef struct			s_data
 {
 	int					sockfd;
+	int					rsockfd;
 	int					seq;
+	int					ttl;
 	pid_t				pid;
 	char				*dest;
 	char				packet[ICMPPAYLOAD];

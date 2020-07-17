@@ -18,8 +18,7 @@ static void						badpacket(struct icmp *icmp)
 		return ;
 	else
 	{
-		printf("%2d  %s\n",\
-				icmp->icmp_seq,\
+		printf(" %s ",\
 				g_data.ip);
 	}
 }
@@ -29,8 +28,7 @@ int								chkpkt(int len)
 	if (((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
 			== ICMP_ECHOREPLY || len == -1)
 	{
-		printf("reached dest: %s\n", g_data.ip);
-		exit(1);
+			return (0);
 	}
 	else
 		badpacket((struct icmp*)(g_data.rcvpacket + 48));
