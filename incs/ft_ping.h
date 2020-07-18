@@ -59,6 +59,7 @@ typedef struct			s_data
 	char				packet[ICMPPAYLOAD];
 	char				rcvpacket[ICMPPAYLOAD];
 	char				ip[INET_ADDRSTRLEN];
+	char				oldip[INET_ADDRSTRLEN];
 	char				addr[INET_ADDRSTRLEN];
 	t_opt				opt;
 	t_tval				tv_in;
@@ -68,6 +69,7 @@ typedef struct			s_data
 
 t_data					g_data;
 
+void	endtracer(int sig);
 unsigned short			calculatechecksum(unsigned short *addr, int len);
 void					pack(void);
 int						unpack(void);

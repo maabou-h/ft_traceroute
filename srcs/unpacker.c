@@ -19,13 +19,11 @@ int						unpack(void)
 	struct iovec		iov[1];
 	int					ans;
 	fd_set fds;
-	struct timeval wait;
+	struct timeval wait = {1,0};
 
 	FD_ZERO(&fds);
 	FD_SET(g_data.rsockfd, &fds);
-	wait.tv_sec = 1;
-	wait.tv_usec = 0;
-	ans = 0;
+	ans = -2;
 	ft_bzero(&g_data.rcvpacket, sizeof(g_data.rcvpacket));
 	ft_bzero(&msg_h, sizeof(msg_h));
 	ft_bzero(&sin, sizeof(sin));
@@ -41,6 +39,7 @@ int						unpack(void)
 	msg_h.msg_flags = 0;
 	if (select(g_data.rsockfd+1, &fds, (fd_set *)0, (fd_set *)0, &wait) > 0)
 		ans = recvmsg(g_data.rsockfd, &msg_h, 0);
+	memcpy(g_data.oldip, g_data.ip, sizeof(g_data.ip));
 	inet_ntop(\
 		AF_INET,\
 		(const void *)&((struct sockaddr_in*)&sin)->sin_addr,\

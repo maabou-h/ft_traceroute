@@ -12,7 +12,7 @@
 
 #include "ft_ping.h"
 
-void				initaddressdata(void)
+static void				initaddressdata(void)
 {
 	struct addrinfo	hints;
 
@@ -27,8 +27,10 @@ void				initaddressdata(void)
 	}
 }
 
-void				initsocket(void)
+static void				initsocket(void)
 {
+	struct timeval tv= {1,0};
+
 	if ((g_data.sockfd = socket(AF_INET,\
 					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
@@ -37,6 +39,12 @@ void				initsocket(void)
 	}
 	if (setsockopt(g_data.sockfd, IPPROTO_IP, IP_HDRINCL,\
 				(int[1]){1}, sizeof(int)) < 0)
+	{
+		close(g_data.sockfd);
+		exit(1);
+	}
+	if (setsockopt(g_data.sockfd, SOL_SOCKET, SO_RCVTIMEO,\
+				&tv, sizeof(struct timeval)) < 0)
 	{
 		close(g_data.sockfd);
 		exit(1);
@@ -53,6 +61,12 @@ void				initsocket(void)
 		close(g_data.rsockfd);
 		exit(1);
 	}
+	if (setsockopt(g_data.rsockfd, SOL_SOCKET, SO_RCVTIMEO,\
+				&tv, sizeof(struct timeval)) < 0)
+	{
+		close(g_data.rsockfd);
+		exit(1);
+	}
 }
 
 void				initprog(void)
@@ -64,6 +78,8 @@ void				initprog(void)
 	}
 	initaddressdata();
 	initsocket();
+	ft_bzero(&g_data.ip, sizeof(g_data.ip));
+	ft_bzero(&g_data.oldip, sizeof(g_data.oldip));
 	inet_ntop(AF_INET,\
 			&((const struct sockaddr_in*)g_data.info->ai_addr)->sin_addr,\
 			g_data.ip,\

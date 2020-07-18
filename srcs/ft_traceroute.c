@@ -15,7 +15,7 @@
 void	endtracer(int sig)
 {
 	(void)sig;
-	printf("\n--- %s ft_traceroute statistics ---\n", g_data.dest);
+	printf("\n");
 	close(g_data.sockfd);
 	close(g_data.rsockfd);
 	exit(1);
@@ -36,11 +36,22 @@ void		tracer(void)
 					+ IPHDRLEN, 0, g_data.info->ai_addr,\
 					g_data.info->ai_addrlen) < 0)
 		{
-			printf("closing fd\n");
 			close(g_data.sockfd);
 			exit(1);
 		}
-		while((responsesize = unpack()))
+	}
+	nprobes = 4;
+	while (--nprobes)
+	{
+		responsesize = unpack();
+		if (responsesize < 1)
+		{
+			if (nprobes == 3)
+				printf("%2d  ", g_data.ttl);
+			printf("* ");
+
+		}
+		else
 			chkpkt(responsesize, nprobes);
 	}
 	printf("\n");
@@ -51,7 +62,7 @@ int			main(int argc, char **argv)
 	int		v;
 	int		i;
 
-	i = MAXHOPS;
+	i = 0;
 	signal(SIGINT, endtracer);
 	ft_bzero(&g_data, sizeof(g_data));
 	g_data.pid = getpid();
@@ -59,12 +70,12 @@ int			main(int argc, char **argv)
 	g_data.ttl = 1;
 	if ((v = options(argc, argv + 1)) < 1)
 	{
-		printf("Usage: ft_traceroute [-h] [-i interval] [-t ttl] destination\n");
+		printf("Usage: ft_traceroute [-h] [-i interval] [-t first ttl] [-T last ttl] destination\n");
 		exit(0);
 	}
 	initprog();
 	printf("ft_traceroute to %s (%s), %d hops max, 60 bytes packets\n", g_data.dest, g_data.ip, MAXHOPS);
-	while (--i)
+	while (++i < MAXHOPS)
 	{
 		tracer();
 		g_data.ttl++;
