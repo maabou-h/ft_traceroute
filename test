@@ -1,0 +1,1 @@
+Usage: ft_traceroute [-h] [-i interval] [-t first ttl] [-T last ttl] destination

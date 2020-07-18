@@ -62,7 +62,7 @@ int			main(int argc, char **argv)
 	int		v;
 	int		i;
 
-	i = 0;
+	i = -1;
 	signal(SIGINT, endtracer);
 	ft_bzero(&g_data, sizeof(g_data));
 	g_data.pid = getpid();
@@ -70,15 +70,15 @@ int			main(int argc, char **argv)
 	g_data.ttl = 1;
 	if ((v = options(argc, argv + 1)) < 1)
 	{
-		printf("Usage: ft_traceroute [-h] [-i interval] [-t first ttl] [-T last ttl] destination\n");
+		dprintf(2, "Usage: ft_traceroute [-h] [-i waitinterval] [-I ttl interval] [-T timeout] [-H hoplimit] destination\n");
 		exit(0);
 	}
 	initprog();
-	printf("ft_traceroute to %s (%s), %d hops max, 60 bytes packets\n", g_data.dest, g_data.ip, MAXHOPS);
-	while (++i < MAXHOPS)
+	dprintf(1, "ft_traceroute to %s (%s), %d hops max, 60 byte packets\n", g_data.dest, g_data.ip, g_data.opt.hlim);
+	while (++i < g_data.opt.hlim)
 	{
 		tracer();
-		g_data.ttl++;
+		g_data.ttl += g_data.opt.ttlint;
 	}
 	return (0);
 }

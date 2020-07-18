@@ -22,19 +22,19 @@ static void				initaddressdata(void)
 	hints.ai_protocol = IPPROTO_ICMP;
 	if (getaddrinfo(g_data.dest, NULL, &hints, &g_data.info))
 	{
-		printf("ft_ping: %s: Name or service not known\n", g_data.dest);
+		dprintf(2, "ft_traceroute: %s: Name or service not known\n", g_data.dest);
 		exit(1);
 	}
 }
 
 static void				initsocket(void)
 {
-	struct timeval tv= {1,0};
+	struct timeval tv= {g_data.opt.timeo,0};
 
 	if ((g_data.sockfd = socket(AF_INET,\
 					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
-		printf("ft_ping: error creating socket\n");
+		dprintf(2, "ft_traceroute: error creating socket\n");
 		exit(1);
 	}
 	if (setsockopt(g_data.sockfd, IPPROTO_IP, IP_HDRINCL,\
@@ -52,7 +52,7 @@ static void				initsocket(void)
 	if ((g_data.rsockfd = socket(AF_INET,\
 					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
-		printf("ft_ping: error creating socket\n");
+		dprintf(2, "ft_traceroute: error creating socket\n");
 		exit(1);
 	}
 	if (setsockopt(g_data.rsockfd, IPPROTO_IP, IP_HDRINCL,\
@@ -73,7 +73,7 @@ void				initprog(void)
 {
 	if (getuid() != 0)
 	{
-		printf("ft_ping: must run as root\n");
+		dprintf(2, "ft_traceroute: must run as root\n");
 		exit(1);
 	}
 	initaddressdata();

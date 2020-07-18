@@ -34,9 +34,10 @@
 
 typedef struct			s_opt
 {
-	int					verbose;
 	int					interval;
-	int					ttl;
+	int					hlim;
+	int					timeo;
+	int					ttlint;
 	int					nopt;
 }						t_opt;
 

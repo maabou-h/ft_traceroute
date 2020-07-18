@@ -38,23 +38,6 @@ static int	getoptwitharg(char **av, char *opt)
 	return (ret);
 }
 
-static int	setverbose(char **av)
-{
-	int		i;
-
-	i = 0;
-	while (av[i])
-	{
-		if (!ft_strcmp(av[i], "-v"))
-		{
-			g_data.opt.nopt++;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
 static int	helper(char **av)
 {
 	int		i;
@@ -71,6 +54,7 @@ static int	helper(char **av)
 
 int			options(int argc, char **av)
 {
+	ft_bzero(&g_data.opt, sizeof(g_data.opt));
 	g_data.opt.nopt = 0;
 	if (argc < 2)
 	{
@@ -78,13 +62,22 @@ int			options(int argc, char **av)
 	}
 	if (helper(av))
 		return (-1);
-	g_data.opt.verbose = setverbose(av);
 	if ((g_data.opt.interval = getoptwitharg(av, "-i")) == -1)
 		return (0);
 	if (g_data.opt.interval < 1)
 		g_data.opt.interval = 1;
-	if ((g_data.opt.ttl = getoptwitharg(av, "-t")) == -1)
+	if ((g_data.opt.timeo = getoptwitharg(av, "-T")) == -1)
 		return (0);
+	if (g_data.opt.timeo < 1)
+		g_data.opt.timeo = 1;
+	if ((g_data.opt.hlim = getoptwitharg(av, "-H")) == -1)
+		return (0);
+	if (g_data.opt.hlim < 1)
+		g_data.opt.hlim = MAXHOPS;
+	if ((g_data.opt.ttlint = getoptwitharg(av, "-I")) == -1)
+		return (0);
+	if (g_data.opt.ttlint < 1)
+		g_data.opt.ttlint = 1;
 	g_data.dest = av[argc - 2];
 	if (g_data.dest == NULL)
 		return (0);

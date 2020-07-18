@@ -20,10 +20,7 @@ int								chkpkt(int len, int nprobe)
 	{
 			g_data.tv_out = gettimestamp_ms();
 			if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip, g_data.ip) > 0))
-			{
-				printf("%2d  %s %d",g_data.ttl,\
-					g_data.ip, ft_strcmp(g_data.oldip, g_data.ip));
-			}
+				printf("%2d  %s",g_data.ttl, g_data.ip);
 			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
 				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
 					g_data.tv_out.tv3 - g_data.tv_in.tv3);
@@ -47,10 +44,7 @@ int								chkpkt(int len, int nprobe)
 		{
 			g_data.tv_out = gettimestamp_ms();
 			if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip, g_data.ip) > 0))
-			{
-				printf("%2d  %s %d",g_data.ttl,\
-					g_data.ip, ft_strcmp(g_data.oldip, g_data.ip));
-			}
+				printf("%2d  %s",g_data.ttl, g_data.ip);
 			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
 				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
 					g_data.tv_out.tv3 - g_data.tv_in.tv3);

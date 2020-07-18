@@ -19,7 +19,7 @@ int						unpack(void)
 	struct iovec		iov[1];
 	int					ans;
 	fd_set fds;
-	struct timeval wait = {1,0};
+	struct timeval wait = {g_data.opt.interval,0};
 
 	FD_ZERO(&fds);
 	FD_SET(g_data.rsockfd, &fds);
