@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PING_H
-# define FT_PING_H
+#ifndef FT_TRACEROUTE_H
+# define FT_TRACEROUTE_H
 # include <stdio.h>
 # include <signal.h>
 # include <arpa/inet.h>
@@ -70,16 +70,20 @@ typedef struct			s_data
 
 t_data					g_data;
 
-void	endtracer(int sig);
-unsigned short			calculatechecksum(unsigned short *addr, int len);
+void					endtracert(int sig);
+
 void					pack(void);
 int						unpack(void);
-void					initprog(void);
+
+void					sockaddr_io(void);
+
 int						options(int argc, char **av);
-int						chkpkt(int len, int nprobe);
-t_tval				gettimestamp_ms(void);
+
+int						checkprobe(int len, int nprobe);
+
 void					ft_bzero(void *s, size_t n);
 int						ft_atoi(const char *str);
 int						ft_strcmp(const char *s1, const char *s2);
+t_tval					gettimestamp_ms(void);
 
 #endif

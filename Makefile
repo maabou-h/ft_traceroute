@@ -14,14 +14,12 @@ NAME := ft_traceroute
 CC ?= clang
 CFLAGS ?= -Werror -Wall -Wextra
 
-SRC := srcs/checker.c\
-		   srcs/checksum.c\
+SRC := srcs/probe_analysis.c\
 		   srcs/ft_traceroute.c\
-		   srcs/helper.c\
-		   srcs/init.c\
+		   srcs/tracert_utilities.c\
+		   srcs/socket_io.c\
 		   srcs/options.c\
 		   srcs/packer.c\
-		   srcs/timestamp.c\
 		   srcs/unpacker.c
 
 
@@ -35,7 +33,7 @@ all: $(NAME)
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) -I$(HDR)
 	
-%.o: %.c $(HDR)ft_ping.h Makefile
+%.o: %.c $(HDR)ft_traceroute.h Makefile
 	$(CC) $(CFLAGS) -o $@ -c $< -I$(HDR)
 
 clean:

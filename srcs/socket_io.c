@@ -10,24 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
-static void				initaddressdata(void)
+static void				initsocket_ou(void)
 {
-	struct addrinfo	hints;
+	struct timeval tv= {g_data.opt.timeo,0};
 
-	ft_bzero(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_RAW;
-	hints.ai_protocol = IPPROTO_ICMP;
-	if (getaddrinfo(g_data.dest, NULL, &hints, &g_data.info))
+	if ((g_data.rsockfd = socket(AF_INET,\
+					SOCK_RAW, IPPROTO_ICMP)) < 0)
 	{
-		dprintf(2, "ft_traceroute: %s: Name or service not known\n", g_data.dest);
+		dprintf(2, "ft_traceroute: error creating socket\n");
+		exit(1);
+	}
+	if (setsockopt(g_data.rsockfd, IPPROTO_IP, IP_HDRINCL,\
+				(int[1]){1}, sizeof(int)) < 0)
+	{
+		close(g_data.rsockfd);
+		exit(1);
+	}
+	if (setsockopt(g_data.rsockfd, SOL_SOCKET, SO_RCVTIMEO,\
+				&tv, sizeof(struct timeval)) < 0)
+	{
+		close(g_data.rsockfd);
 		exit(1);
 	}
 }
 
-static void				initsocket(void)
+static void				initsocket_in(void)
 {
 	struct timeval tv= {g_data.opt.timeo,0};
 
@@ -49,35 +58,29 @@ static void				initsocket(void)
 		close(g_data.sockfd);
 		exit(1);
 	}
-	if ((g_data.rsockfd = socket(AF_INET,\
-					SOCK_RAW, IPPROTO_ICMP)) < 0)
-	{
-		dprintf(2, "ft_traceroute: error creating socket\n");
-		exit(1);
-	}
-	if (setsockopt(g_data.rsockfd, IPPROTO_IP, IP_HDRINCL,\
-				(int[1]){1}, sizeof(int)) < 0)
-	{
-		close(g_data.rsockfd);
-		exit(1);
-	}
-	if (setsockopt(g_data.rsockfd, SOL_SOCKET, SO_RCVTIMEO,\
-				&tv, sizeof(struct timeval)) < 0)
-	{
-		close(g_data.rsockfd);
-		exit(1);
-	}
 }
 
-void				initprog(void)
+void				sockaddr_io(void)
 {
+	struct addrinfo	hints;
+
 	if (getuid() != 0)
 	{
 		dprintf(2, "ft_traceroute: must run as root\n");
 		exit(1);
 	}
-	initaddressdata();
-	initsocket();
+	ft_bzero(&hints, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_RAW;
+	hints.ai_protocol = IPPROTO_ICMP;
+	if (getaddrinfo(g_data.dest, NULL, &hints, &g_data.info))
+	{
+		dprintf(2, "ft_traceroute: %s: Name or service not known\n",\
+			g_data.dest);
+		exit(1);
+	}
+	initsocket_in();
+	initsocket_ou();
 	ft_bzero(&g_data.ip, sizeof(g_data.ip));
 	ft_bzero(&g_data.oldip, sizeof(g_data.oldip));
 	inet_ntop(AF_INET,\

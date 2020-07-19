@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 void		ft_bzero(void *s, size_t n)
 {
@@ -62,4 +62,19 @@ int			ft_atoi(const char *str)
 	if ((str[i] >= 65 && str[i] <= 90) || (str[i] >= 97 && str[i] <= 122))
 		return (-1);
 	return ((neg) ? ((int)-ret) : ((int)ret));
+}
+
+t_tval				gettimestamp_ms(void)
+{
+	struct timeval	te;
+    t_tval          tv;
+	long			mm;
+
+	gettimeofday(&te, NULL);
+    ft_bzero(&tv, sizeof(t_tval));
+	tv.tv = te.tv_sec * 1000LL + te.tv_usec / 1000;
+	mm = te.tv_sec * 10LL + te.tv_usec / 10;
+	tv.tv3 = mm % 1000;
+    tv.tv2 = mm % 100;
+    return (tv);
 }

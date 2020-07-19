@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
 static int	getoptwitharg(char **av, char *opt)
 {
@@ -52,20 +52,16 @@ static int	helper(char **av)
 	return (0);
 }
 
-int			options(int argc, char **av)
+static int	arg_checker(char **av)
 {
-	ft_bzero(&g_data.opt, sizeof(g_data.opt));
-	g_data.opt.nopt = 0;
-	if (argc < 2)
-	{
-		return (0);
-	}
-	if (helper(av))
-		return (-1);
 	if ((g_data.opt.interval = getoptwitharg(av, "-i")) == -1)
 		return (0);
 	if (g_data.opt.interval < 1)
 		g_data.opt.interval = 1;
+	if ((g_data.ttl = getoptwitharg(av, "-t")) == -1)
+		return (0);
+	if (g_data.ttl < 1)
+		g_data.ttl = 1;
 	if ((g_data.opt.timeo = getoptwitharg(av, "-T")) == -1)
 		return (0);
 	if (g_data.opt.timeo < 1)
@@ -78,6 +74,21 @@ int			options(int argc, char **av)
 		return (0);
 	if (g_data.opt.ttlint < 1)
 		g_data.opt.ttlint = 1;
+	return (1);
+}
+
+int			options(int argc, char **av)
+{
+	ft_bzero(&g_data.opt, sizeof(g_data.opt));
+	g_data.opt.nopt = 0;
+	if (argc < 2)
+	{
+		return (0);
+	}
+	if (helper(av))
+		return (-1);
+	if (arg_checker(av) == 0)
+		return (0);
 	g_data.dest = av[argc - 2];
 	if (g_data.dest == NULL)
 		return (0);

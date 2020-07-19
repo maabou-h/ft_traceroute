@@ -10,9 +10,36 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
-static void	genmsgcontent(char *content)
+static unsigned short	calculatechecksum(unsigned short *addr, int len)
+{
+	int				nleft;
+	int				sum;
+	unsigned short	*w;
+	unsigned short	answer;
+
+	nleft = len;
+	sum = 0;
+	w = addr;
+	answer = 0;
+	while (nleft > 1)
+	{
+		sum += *w++;
+		nleft -= 2;
+	}
+	if (nleft == 1)
+	{
+		*(unsigned char*)(&answer) = *(unsigned char*)w;
+		sum += answer;
+	}
+	sum = (sum >> 16) + (sum & 0xffff);
+	sum += (sum >> 16);
+	answer = ~sum;
+	return (answer);
+}
+
+static void				genmsgcontent(char *content)
 {
 	ssize_t i;
 
@@ -21,7 +48,7 @@ static void	genmsgcontent(char *content)
 		content[i] = 16 + i;
 }
 
-static void	geniphdr(struct ip *ip)
+static void				geniphdr(struct ip *ip)
 {
 	ip->ip_v = 4;
 	ip->ip_hl = 5;
@@ -36,7 +63,7 @@ static void	geniphdr(struct ip *ip)
 				((struct sockaddr_in*)g_data.info->ai_addr)->sin_addr;
 }
 
-static void	genicmphdr(struct icmp *icmp)
+static void				genicmphdr(struct icmp *icmp)
 {
 	icmp->icmp_type = ICMP_ECHO;
 	icmp->icmp_code = 0;
@@ -47,7 +74,7 @@ static void	genicmphdr(struct icmp *icmp)
 			(unsigned short*)icmp, DATALEN + ICMPHDRLEN);
 }
 
-void		pack(void)
+void					pack(void)
 {
 	ft_bzero(&g_data.packet, sizeof(g_data.packet));
 	genmsgcontent((char*)(g_data.packet + IPHDRLEN + ICMPHDRLEN));

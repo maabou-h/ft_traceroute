@@ -10,32 +10,34 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_ping.h"
+#include "ft_traceroute.h"
 
+static void	probe_reacheddest(int nprobe)
+{
+	g_data.tv_out = gettimestamp_ms();
+	if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip,\
+		g_data.ip) > 0))
+		printf("%2d  %s",g_data.ttl, g_data.ip);
+	if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
+		printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+			g_data.tv_out.tv3 - g_data.tv_in.tv3);
+	else if ((g_data.tv_out.tv2 - g_data.tv_in.tv2) > 0)
+		printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
+			g_data.tv_out.tv2 - g_data.tv_in.tv2);
+	else
+		printf(" %ld ms ", g_data.tv_out.tv - g_data.tv_in.tv);
+	if (nprobe == 1)
+	{
+		endtracert(SIGINT);
+		exit (0);
+	}
+}
 
-int								chkpkt(int len, int nprobe)
+int			checkprobe(int len, int nprobe)
 {
 	if (((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
 			!= ICMP_TIME_EXCEEDED || len == -1)
-	{
-			g_data.tv_out = gettimestamp_ms();
-			if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip, g_data.ip) > 0))
-				printf("%2d  %s",g_data.ttl, g_data.ip);
-			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
-				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
-					g_data.tv_out.tv3 - g_data.tv_in.tv3);
-			else if ((g_data.tv_out.tv2 - g_data.tv_in.tv2) > 0)
-				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
-					g_data.tv_out.tv2 - g_data.tv_in.tv2);
-			else
-				printf(" %ld ms ", g_data.tv_out.tv - g_data.tv_in.tv);
-			if (nprobe == 1 && ((struct icmp*)(g_data.rcvpacket + IPHDRLEN))->icmp_type\
-				== ICMP_ECHOREPLY)
-				{
-					endtracer(SIGINT);
-					exit (0);
-				}
-	}
+		probe_reacheddest(nprobe);
 	else
 	{
 		if (((struct icmp*)(g_data.rcvpacket + 48))->icmp_id != g_data.pid)
@@ -43,7 +45,8 @@ int								chkpkt(int len, int nprobe)
 		else
 		{
 			g_data.tv_out = gettimestamp_ms();
-			if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip, g_data.ip) > 0))
+			if (nprobe == 3 || (nprobe != 3 && ft_strcmp(g_data.oldip,\
+				g_data.ip) > 0))
 				printf("%2d  %s",g_data.ttl, g_data.ip);
 			if ((g_data.tv_out.tv3 - g_data.tv_in.tv3) > 0)
 				printf(" %ld.%ld ms ", g_data.tv_out.tv - g_data.tv_in.tv,\
