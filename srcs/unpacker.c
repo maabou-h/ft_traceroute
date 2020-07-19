@@ -14,31 +14,23 @@
 
 int						unpack(void)
 {
-	struct msghdr		msg_h;
 	struct sockaddr_in	sin;
-	struct iovec		iov[1];
 	int					ans;
-	fd_set fds;
-	struct timeval wait = {g_data.opt.interval,0};
+	unsigned int		addr_len;
+	fd_set				fds;
+	struct timeval		wait;
 
 	FD_ZERO(&fds);
 	FD_SET(g_data.rsockfd, &fds);
 	ans = -2;
+	wait.tv_sec = g_data.opt.interval;
+	wait.tv_usec = 0;
+	addr_len = sizeof(struct sockaddr);
 	ft_bzero(&g_data.rcvpacket, sizeof(g_data.rcvpacket));
-	ft_bzero(&msg_h, sizeof(msg_h));
-	ft_bzero(&sin, sizeof(sin));
-	ft_bzero(&iov, sizeof(iov));
-	iov[0].iov_base = g_data.rcvpacket;
-	iov[0].iov_len = sizeof(g_data.rcvpacket);
-	msg_h.msg_name = &sin;
-	msg_h.msg_namelen = sizeof(sin);
-	msg_h.msg_control = 0;
-	msg_h.msg_controllen = 0;
-	msg_h.msg_iov = iov;
-	msg_h.msg_iovlen = 1;
-	msg_h.msg_flags = 0;
-	if (select(g_data.rsockfd+1, &fds, (fd_set *)0, (fd_set *)0, &wait) > 0)
-		ans = recvmsg(g_data.rsockfd, &msg_h, 0);
+	if (select(g_data.rsockfd+1, &fds, (fd_set*)0, (fd_set*)0, &wait) > 0)
+		//ans = recvmsg(g_data.rsockfd, &msg_h, 0);
+		ans = recvfrom(g_data.rsockfd, &g_data.rcvpacket, sizeof(g_data.rcvpacket), 0,  
+             (struct sockaddr*)&sin, &addr_len);
 	memcpy(g_data.oldip, g_data.ip, sizeof(g_data.ip));
 	inet_ntop(\
 		AF_INET,\
